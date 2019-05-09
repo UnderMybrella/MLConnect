@@ -76,7 +76,7 @@ object MLConnect {
         val track = JSON_MAPPER.readValue<InfiniteJukeboxTrack>(File("$songID.json"))
         val audio = File("$songID.m4a")
 
-        println("Preprocessing...")
+        println("Preprocessing ${track.info.title}...")
 
         preprocess(track)
         dynamicCalculateNearestNeighbors(track.analysis.beatsArray)
