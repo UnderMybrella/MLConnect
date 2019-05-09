@@ -99,10 +99,10 @@ object MLConnect {
                 )
             }
 
-        val out = PrintStream("branches.csv")
+        var out = PrintStream("branches.csv")
         val b64 = Base64.getEncoder()
-        val csvFormatString = "%s, %s, %s"
-        rows.forEach { (branch, a, b) ->
+        val csvFormatString = "%s,%s,%s"
+        rows.filter { (branch) -> branch }.forEach { (branch, a, b) ->
             out.println(
                 String.format(
                     csvFormatString,
@@ -112,6 +112,18 @@ object MLConnect {
                 )
             )
         }
+//        out.close()
+//        out = PrintStream("branches_false.csv")
+//        rows.filter { (branch) -> !branch }.forEach { (branch, a, b) ->
+//            out.println(
+//                String.format(
+//                    csvFormatString,
+//                    branch,
+//                    frameMap.getValue(a).joinToString("") { frame -> b64.encodeToString(frame.data) },
+//                    frameMap.getValue(b).joinToString("") { frame -> b64.encodeToString(frame.data) }
+//                )
+//            )
+//        }
 
         println("Done!")
     }
