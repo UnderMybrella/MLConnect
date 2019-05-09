@@ -20,6 +20,7 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.ext.web.client.sendAwait
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.io.FileOutputStream
 import java.io.PrintStream
 import java.util.*
 
@@ -88,7 +89,7 @@ object MLConnect {
         val (frames, frameMap) = LavaBox.separateAndGroupTrack(playerManager, player, audio.absolutePath, track)
 
         println("Printing data...")
-        val rows = beats.flatMap { a -> beats.map(a::to) }
+        val rowsSource = beats.flatMap { a -> beats.map(a::to) }
             .map { (a, b) ->
                 Triple(
                     a.neighbors?.any { edge ->
@@ -99,10 +100,17 @@ object MLConnect {
                 )
             }
 
-        var out = PrintStream("branches.csv")
+        val countEach = minOf(rowsSource.count { it.first }, rowsSource.count { !it.first })
+        val rows = rowsSource.filter { it.first }
+            .shuffled()
+            .take(countEach)
+            .plus(rowsSource.filter { !it.first }.shuffled().take(countEach))
+            .shuffled()
+
+        val out = PrintStream(FileOutputStream("branches.csv", true))
         val b64 = Base64.getEncoder()
         val csvFormatString = "%s,%s,%s"
-        rows.take(rows.size - 1).forEach { (branch, a, b) ->
+        rows.forEach { (branch, a, b) ->
             out.println(
                 String.format(
                     csvFormatString,
@@ -112,28 +120,7 @@ object MLConnect {
                 )
             )
         }
-        rows.takeLast(1).forEach { (branch, a, b) ->
-            out.print(
-                String.format(
-                    csvFormatString,
-                    branch,
-                    frameMap.getValue(a).joinToString("") { frame -> b64.encodeToString(frame.data) },
-                    frameMap.getValue(b).joinToString("") { frame -> b64.encodeToString(frame.data) }
-                )
-            )
-        }
-//        out.close()
-//        out = PrintStream("branches_false.csv")
-//        rows.filter { (branch) -> !branch }.forEach { (branch, a, b) ->
-//            out.println(
-//                String.format(
-//                    csvFormatString,
-//                    branch,
-//                    frameMap.getValue(a).joinToString("") { frame -> b64.encodeToString(frame.data) },
-//                    frameMap.getValue(b).joinToString("") { frame -> b64.encodeToString(frame.data) }
-//                )
-//            )
-//        }
+        out.close()
 
         println("Done!")
     }
