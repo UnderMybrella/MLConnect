@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.30'
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'application'
+}
+
+group 'dev.eternalbox'
+version '0.1'
+
+mainClassName = "dev.eternalbox.mlconnect.MLConnect"
+
+sourceCompatibility = 1.8
+
+ext {
+    jackson_version = '2.9.4'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url "https://maven.abimon.org"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    compile "dev.eternalbox:LavaBox:1f83d89"
+    compile 'io.vertx:vertx-web-client:3.7.0'
+    compile "io.vertx:vertx-lang-kotlin:3.7.0"
+    compile "io.vertx:vertx-lang-kotlin-coroutines:3.7.0"
+
+    compile "com.fasterxml.jackson.core:jackson-core:$jackson_version"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+    compile "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version"
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
